@@ -9,3 +9,53 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+library(effsize)
+library(broom)
+library(ggbeeswarm)
+library(car)
+```
+#T-TEST 1
+
+```{r}
+#compoare mass between male/female chinstrap penguins
+
+chinstrap_penguins <- penguins %>% 
+  filter(species == "Chinstrap")
+
+#basic histogram of masses
+chin_hist <- chinstrap_penguins %>% 
+  ggplot(aes(x = body_mass_g))+
+  geom_histogram(bins = 10)+
+  facet_wrap(~sex)
+
+chin_hist
+
+#Do a qq plot to explore normality
+
+chin_qq <- chinstrap_penguins %>% 
+  ggplot(aes(sample = body_mass_g))+
+  geom_qq()+
+  facet_wrap(~sex)
+
+chin_qq
+
+```
+```{r}
+#get descriptive stats of chinstraps
+
+chin_stat <- chinstrap_penguins %>% 
+  group_by(sex) %>% 
+  summarize(
+    mean = mean(body_mass_g),
+    median = median(body_mass_g),
+    sd = sd(body_mass_g),
+    sample_size = n())
+
+
+chin_stat
+
+```
+

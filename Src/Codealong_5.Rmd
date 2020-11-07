@@ -59,3 +59,40 @@ chin_stat
 
 ```
 
+```{r}
+#Going to do a t-tst or anova or some shit
+#Firwt get vectors of mass for m/f chinstraps to ue t-test
+
+male_chinstrap_mass <-chinstrap_penguins %>% 
+  filter(sex == "female") %>% 
+  pull(body_mass_g)
+
+female_chinstrap_mass <- chinstrap_penguins %>%
+  filter(sex == "male") %>% 
+  pull(body_mass_g)
+
+###do the tests
+
+#IS there sig dif in the masses?
+chinstrap_test <- 
+  t.test(male_chinstrap_mass, female_chinstrap_mass)
+
+chinstrap_test
+
+#cohen d effect size time!
+chinstrap_cohen<-
+  cohen.d(male_chinstrap_mass, female_chinstrap_mass)
+
+chinstrap_cohen
+
+#Are male cp sign. larger than fem. peng?
+#Is one-sided test, could I have gotten 'this large' or greater of difference by random sample (Not 'this distance away')
+
+chinstrap_size_compare<-t.test(female_chinstrap_mass,male_chinstrap_mass, alternative = "greater") #must line up with order of arguments (is male greater than female)
+#This is backwards! Not sure why--in codealong video these are reversed and it works! WHy is my test running backwards?
+
+
+chinstrap_size_compare
+
+```
+

@@ -379,12 +379,12 @@ summary {
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ── Attaching packages ──────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 ## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
 ## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
 ## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ─────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(palmerpenguins)
@@ -440,6 +440,66 @@ chin_stat &lt;- chinstrap_penguins %&gt;%
 ##   &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;       &lt;int&gt;
 ## 1 female 3527.   3550  285.          34
 ## 2 male   3939.   3950  362.          34</code></pre>
+<pre class="r"><code>#Going to do a t-tst or anova or some shit
+#Firwt get vectors of mass for m/f chinstraps to ue t-test
+
+male_chinstrap_mass &lt;-chinstrap_penguins %&gt;% 
+  filter(sex == &quot;female&quot;) %&gt;% 
+  pull(body_mass_g)
+
+female_chinstrap_mass &lt;- chinstrap_penguins %&gt;%
+  filter(sex == &quot;male&quot;) %&gt;% 
+  pull(body_mass_g)
+
+###do the tests
+
+#IS there sig dif in the masses?
+chinstrap_test &lt;- 
+  t.test(male_chinstrap_mass, female_chinstrap_mass)
+
+chinstrap_test</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  male_chinstrap_mass and female_chinstrap_mass
+## t = -5.2077, df = 62.575, p-value = 2.264e-06
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -569.7903 -253.7391
+## sample estimates:
+## mean of x mean of y 
+##  3527.206  3938.971</code></pre>
+<pre class="r"><code>#cohen d effect size time!
+chinstrap_cohen&lt;-
+  cohen.d(male_chinstrap_mass, female_chinstrap_mass)
+
+chinstrap_cohen</code></pre>
+<pre><code>## 
+## Cohen&#39;s d
+## 
+## d estimate: -1.263061 (large)
+## 95 percent confidence interval:
+##      lower      upper 
+## -1.7933879 -0.7327341</code></pre>
+<pre class="r"><code>#Are male cp sign. larger than fem. peng?
+#Is one-sided test, could I have gotten &#39;this large&#39; or greater of difference by random sample (Not &#39;this distance away&#39;)
+
+chinstrap_size_compare&lt;-t.test(female_chinstrap_mass,male_chinstrap_mass, alternative = &quot;greater&quot;) #must line up with order of arguments (is male greater than female)
+#This is backwards! Not sure why--in codealong video these are reversed and it works! WHy is my test running backwards?
+
+
+chinstrap_size_compare</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  female_chinstrap_mass and male_chinstrap_mass
+## t = 5.2077, df = 62.575, p-value = 1.132e-06
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  279.7552      Inf
+## sample estimates:
+## mean of x mean of y 
+##  3938.971  3527.206</code></pre>
 
 
 

@@ -95,4 +95,91 @@ chinstrap_size_compare<-t.test(female_chinstrap_mass,male_chinstrap_mass, altern
 chinstrap_size_compare
 
 ```
+```{r}
+#One way anova
+
+#MAke table of penguin counts by species and sex
+
+penguin_counts <- penguins %>% 
+  count(species, sex)
+
+penguin_counts
+
+#make subset of only f penguins
+
+penguin_f <- penguins %>% 
+  filter(sex == "female")
+
+peng_plot <- penguin_f %>% 
+  ggplot(aes(x=flipper_length_mm))+
+  geom_histogram(aes(fill = species))+
+ facet_wrap(~species, scales = "free") #this lets each one have its own x, y axis scale
+
+peng_plot
+
+#Check normality with qq
+peng_plot_q <- penguin_f %>% 
+  ggplot(aes(sample=flipper_length_mm))+
+  geom_qq(aes(color = species))+
+ facet_wrap(~species, scales = "free")
+
+peng_plot_q
+```
+```{r}
+#Summary stats for pengs
+
+peng_summary<-penguin_f %>% 
+  group_by(species) %>% 
+  summarize(
+    mean_flip = mean(flipper_length_mm),
+    sd_flip = sd(flipper_length_mm),
+    sample_size = n(),
+    variance = var(flipper_length_mm),
+    std_error = (sd_flip / sqrt(sample_size)))
+
+
+peng_summary
+
+#levene test is hypoth test where null is groups have = variance
+
+leveneTest(flipper_length_mm ~ species, data=penguin_f)
+
+```
+
+```{r}
+#Make beeswarm plot with mean +/- 1 std dev
+
+ggplot()+
+  geom_beeswarm(data = penguin_f, 
+                aes(x=species, y=flipper_length_mm),
+                color="gray70",
+                size = 3,
+                alpha = 0.5) + #changes transparency
+  geom_point(data = peng_summary, 
+             aes(x=species, y=mean_flip),
+                  size=4)+
+  geom_errorbar(data = peng_summary,
+                aes(x=species,
+                    ymax=mean_flip + sd_flip,
+                    ymin = mean_flip - sd_flip,
+                    width = 0.1))
+                 
+```
+
+```{r}
+#Now actual anova
+
+peng_aov <- aov(flipper_length_mm~species, data=penguin_f)
+summary(peng_aov)
+
+TukeyHSD(peng_aov)
+
+#Do a type 3 anova becuase that's what you use if your sample set isn't balanced (different smaple sizes etc) ype 1 is aov, best for same sample sizes across factors.
+
+peng_linear_model <- lm(flipper_length_mm ~ species, data=penguin_f)
+peng_aov_t3 <- Anova(peng_linear_model, type = "III")
+peng_aov_t3
+
+```
+
 
